@@ -8,29 +8,54 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 
 public class DisplayGameActivity extends ActionBarActivity {
 
     private int[] tilesPerPlayer = new int[] {0, 0, 9, 8, 10, 12, 15};
+    private String[] scenarios = new String[] { "Assassins", "Key to the University",
+            "Political Struggle", "Dimensional Rift", "Talismans of Magic",
+            "The Well of Souls", "Summer Break" };
+    private ArrayList<String> characterColors = new ArrayList<String>(Arrays.asList(new String[]
+            { "Blue", "Grey", "Green", "Red", "Purple", "White", "Orange"}));
+
     private boolean needsMana;
     private boolean needsGold;
     private boolean needsMages;
     private boolean needsIP;
 
     private ArrayList<Tile> possibleTiles;
+    private ArrayList<Tile> manaTiles;
+    private ArrayList<Tile> goldTiles;
+    private ArrayList<Tile> influenceTiles;
+    private ArrayList<Tile> mageTiles;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.possibleTiles = new ArrayList<Tile>();
+        this.manaTiles = new ArrayList<Tile>();
+        this.goldTiles = new ArrayList<Tile>();
+        this.influenceTiles = new ArrayList<Tile>();
+        this.mageTiles = new ArrayList<Tile>();
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
         int numPlayers = Integer.valueOf(intent.getStringExtra(MainActivity.NUM_PLAYERS));
         String sidesUsed = intent.getStringExtra(MainActivity.SIDES_USED);
-        Boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
+        boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
+        boolean inclRes = intent.getBooleanExtra(MainActivity.INCLUDE_RESOURCES, false);
+        this.needsMages = intent.getBooleanExtra(MainActivity.INCLUDE_MAGE, false);
+        boolean scenario = intent.getBooleanExtra(MainActivity.INCLUDE_SCENARIO, false);
+        boolean white = intent.getBooleanExtra(MainActivity.INCLUDE_WHITE, false);
+
+        if(inclRes) {
+            this.needsMana = true;
+            this.needsGold = true;
+            this.needsIP = true;
+        }
 
 
         setContentView(R.layout.activity_display_game);
@@ -47,7 +72,50 @@ public class DisplayGameActivity extends ActionBarActivity {
         this.connectTiles(sidesUsed);
 
         ArrayList<Tile> university = this.buildUniversity(tilesPerPlayer[numPlayers], sidesUsed);
+
+        if(!mancersUsed) {
+            this.characterColors.remove(6);
+        }
+        if(!white) {
+            if (this.characterColors.size() > numPlayers) {
+                this.characterColors.remove(5);
+            }
+        }
+
         Random r = new Random();
+        int first = r.nextInt(numPlayers);
+
+        for(int i = 0; i < numPlayers; i++) {
+            TextView tv = new TextView(this);
+            int cha = r.nextInt(this.characterColors.size());
+            String text = "Player " + i + ": " + this.characterColors.get(cha);
+            if(sidesUsed.equals("All A")) {
+                text += " - A";
+            }
+            else if(sidesUsed.equals("All B") || r.nextBoolean()) {
+                text += " - B";
+            }
+            else {
+                text += " - A";
+            }
+            if (i == first) {
+                text += " Goes First";
+            }
+            tv.setText(text);
+            tv.setTextSize(20);
+            this.characterColors.remove(cha);
+            display_game.addView(tv);
+        }
+
+        if(scenario) {
+            TextView tv = new TextView(this);
+            String text = "Will be playing the \"";
+            text += this.scenarios[r.nextInt(this.scenarios.length)];
+            text += "\" Scenario";
+            tv.setText(text);
+            tv.setTextSize(20);
+            display_game.addView(tv);
+        }
 
         int size = university.size();
         for(int i=0; i<size; i++) {
@@ -95,6 +163,47 @@ public class DisplayGameActivity extends ActionBarActivity {
             university.add(new Tile("Library - B", false, false, false, false));
         }
 
+        if(this.needsGold) {
+            Tile tile = this.goldTiles.get(r.nextInt(this.goldTiles.size()));
+            university.add(tile);
+            numTiles -= 1;
+            this.possibleTiles.remove(tile.aSide);
+            this.possibleTiles.remove(tile.bSide);
+            if (tile.hasIP) { this.needsIP = false; }
+            else { this.influenceTiles.remove(tile.aSide); this.influenceTiles.remove(tile.bSide); }
+            if (tile.hasMana) { this.needsMana = false; }
+            else { this.manaTiles.remove(tile.aSide); this.manaTiles.remove(tile.bSide); }
+            if (tile.addsMages) { this.needsMages = false; }
+            else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
+        }
+        if(this.needsMana) {
+            Tile tile = this.manaTiles.get(r.nextInt(this.manaTiles.size()));
+            university.add(tile);
+            numTiles -= 1;
+            this.possibleTiles.remove(tile.aSide);
+            this.possibleTiles.remove(tile.bSide);
+            if (tile.hasIP) { this.needsIP = false; }
+            else { this.influenceTiles.remove(tile.aSide); this.influenceTiles.remove(tile.bSide); }
+            if (tile.addsMages) { this.needsMages = false; }
+            else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
+        }
+        if(this.needsIP) {
+            Tile tile = this.influenceTiles.get(r.nextInt(this.influenceTiles.size()));
+            university.add(tile);
+            numTiles -= 1;
+            this.possibleTiles.remove(tile.aSide);
+            this.possibleTiles.remove(tile.bSide);
+            if (tile.addsMages) { this.needsMages = false; }
+            else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
+        }
+        if(this.needsMages) {
+            Tile tile = this.mageTiles.get(r.nextInt(this.mageTiles.size()));
+            university.add(tile);
+            numTiles -= 1;
+            this.possibleTiles.remove(tile.aSide);
+            this.possibleTiles.remove(tile.bSide);
+        }
+
         for (int i = 0; i < numTiles; i++) {
             Tile tile = this.possibleTiles.get(r.nextInt(this.possibleTiles.size()));
             university.add(tile);
@@ -129,8 +238,8 @@ public class DisplayGameActivity extends ActionBarActivity {
 
     public void buildBSides(boolean hasMancers) {
         this.possibleTiles.add(new Tile("Adventuring - B", false, false, false ,false));
-        this.possibleTiles.add(new Tile("Astronomy Tower - B", true, true, false, true));
         this.possibleTiles.add(new Tile("Archmage's Study - B", true, false, false, false));
+        this.possibleTiles.add(new Tile("Astronomy Tower - B", true, true, false, true));
         this.possibleTiles.add(new Tile("Catacombs - B", false, true, true, false));
         this.possibleTiles.add(new Tile("Chapel - B", false, false, true, false));
         this.possibleTiles.add(new Tile("Courtyard - B", true, false, false, false));
@@ -160,6 +269,21 @@ public class DisplayGameActivity extends ActionBarActivity {
         else {
             for (int i=0; i < this.possibleTiles.size(); i++) {
                 this.possibleTiles.get(i).aSide = this.possibleTiles.get(i);
+            }
+        }
+
+        for (Tile t : this.possibleTiles) {
+            if (t.hasGold) {
+                this.goldTiles.add(t);
+            }
+            if (t.hasMana) {
+                this.manaTiles.add(t);
+            }
+            if (t.hasIP) {
+                this.influenceTiles.add(t);
+            }
+            if (t.addsMages) {
+                this.mageTiles.add(t);
             }
         }
     }

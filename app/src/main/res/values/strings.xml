@@ -7,8 +7,10 @@
     <string name="player_count">Num players:</string>
     <string name="sides_used">Sides:</string>
     <string name="include_mancers">Include Mancer\'s Expansion</string>
-    <string name="include_plus_mage">Include +mage tile</string>
-    <string name="include_resources">Include all resources</string>
+    <string name="include_plus_mage">Include Mage Recruit</string>
+    <string name="include_resources">Include All Resources</string>
+    <string name="include_scenario">Include Scenario</string>
+    <string name="include_white">Include Neutral Candidate</string>
     <string name="submit">Go!</string>
 
     <string-array name="player_possibilities">
@@ -25,5 +27,6 @@
     </string-array>
 
     <string name="title_activity_display_game">DisplayGameActivity</string>
+    <string name="title_activity_consortium_board">ConsortiumBoard</string>
 
 </resources>
