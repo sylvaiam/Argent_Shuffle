@@ -3,7 +3,6 @@ package antoku.argenttheconsortiumshuffle;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,22 +30,11 @@ public class DisplayGameActivity extends ActionBarActivity {
         Intent intent = getIntent();
         int numPlayers = Integer.valueOf(intent.getStringExtra(MainActivity.NUM_PLAYERS));
         String sidesUsed = intent.getStringExtra(MainActivity.SIDES_USED);
-        Boolean mancersUsed = new Boolean(intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false));
+        Boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
 
 
         setContentView(R.layout.activity_display_game);
         LinearLayout display_game = (LinearLayout)findViewById(R.id.display_game);
-        TextView players = new TextView(this);
-        players.setText(numPlayers);
-        display_game.addView(players);
-
-        TextView sides = new TextView(this);
-        sides.setText(sidesUsed);
-        display_game.addView(sides);
-
-        TextView mancers = new TextView(this);
-        mancers.setText(mancersUsed.toString());
-        display_game.addView(mancers);
 
         if(sidesUsed.equals("Mix") || sidesUsed.equals("All A")) {
             this.buildASides(mancersUsed);
@@ -68,6 +56,7 @@ public class DisplayGameActivity extends ActionBarActivity {
             TextView tv = new TextView(this);
             int tile = r.nextInt(university.size());
             tv.setText(university.get(tile).name);
+            tv.setTextSize(20);
             university.remove(tile);
             display_game.addView(tv);
         }
