@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Argent: the Consortium Shuffle</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="player_count">Num players:</string>
+    <string name="sides_used">Sides:</string>
+    <string name="include_mancers">Include Mancer\'s Expansion</string>
+    <string name="include_plus_mage">Include +mage tile</string>
+    <string name="include_resources">Include all resources</string>
+    <string name="submit">Go!</string>
+
+    <string-array name="player_possibilities">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    <string-array name="side_possibilities">
+        <item>All A</item>
+        <item>All B</item>
+        <item>Mix</item>
+    </string-array>
+
+    <string name="title_activity_display_game">DisplayGameActivity</string>
+
+</resources>
