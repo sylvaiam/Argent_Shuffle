@@ -44,9 +44,7 @@ public class DisplayGameActivity extends ActionBarActivity {
             this.buildBSides(mancersUsed);
         }
 
-        if (sidesUsed.equals("Mix")) {
-            this.connectTiles();
-        }
+        this.connectTiles(sidesUsed);
 
         ArrayList<Tile> university = this.buildUniversity(tilesPerPlayer[numPlayers], sidesUsed);
         Random r = new Random();
@@ -152,10 +150,17 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
     }
 
-    public void connectTiles() {
-        int numTiles = this.possibleTiles.size()/2;
-        for (int i = 0; i < numTiles; i++) {
-            this.possibleTiles.get(i).setBSide(this.possibleTiles.get(i+numTiles));
+    public void connectTiles(String mix) {
+        if (mix.equals("Mix")) {
+            int numTiles = this.possibleTiles.size() / 2;
+            for (int i = 0; i < numTiles; i++) {
+                this.possibleTiles.get(i).setBSide(this.possibleTiles.get(i + numTiles));
+            }
+        }
+        else {
+            for (int i=0; i < this.possibleTiles.size(); i++) {
+                this.possibleTiles.get(i).aSide = this.possibleTiles.get(i);
+            }
         }
     }
 
