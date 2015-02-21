@@ -35,6 +35,7 @@ public class DisplayGameActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //TODO: consortium board. pick 10 random consortium members, be able to mark them per player, keep track of influence, make it visible who's at what influence and who has marked whom
         this.possibleTiles = new ArrayList<Tile>();
         this.manaTiles = new ArrayList<Tile>();
         this.goldTiles = new ArrayList<Tile>();
@@ -70,8 +71,21 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
 
         this.connectTiles(sidesUsed);
+        if(numPlayers == 2) {
+            for(int i = this.possibleTiles.size() - 1; i >= 0; i--) {
+                Tile t = this.possibleTiles.get(i);
+                if (t.name.equals("Great Hall - A")) {
+                    this.possibleTiles.remove(t);
+                    this.influenceTiles.remove(t);
+                }
+                else if(t.name.contains("Dormitory")) {
+                    this.possibleTiles.remove(t.aSide);
+                    this.possibleTiles.remove(t.bSide);
+                }
+            }
+        }
 
-        ArrayList<Tile> university = this.buildUniversity(tilesPerPlayer[numPlayers], sidesUsed);
+        ArrayList<Tile> university = this.buildUniversity(numPlayers, sidesUsed);
 
         if(!mancersUsed) {
             this.characterColors.remove(6);
@@ -83,10 +97,11 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
 
         Random r = new Random();
+        TextView tv;
         int first = r.nextInt(numPlayers);
 
         for(int i = 0; i < numPlayers; i++) {
-            TextView tv = new TextView(this);
+            tv = new TextView(this);
             int cha = r.nextInt(this.characterColors.size());
             String text = "Player " + i + ": " + this.characterColors.get(cha);
             if(sidesUsed.equals("All A")) {
@@ -108,7 +123,7 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
 
         if(scenario) {
-            TextView tv = new TextView(this);
+            tv = new TextView(this);
             String text = "Will be playing the \"";
             text += this.scenarios[r.nextInt(this.scenarios.length)];
             text += "\" Scenario";
@@ -117,9 +132,12 @@ public class DisplayGameActivity extends ActionBarActivity {
             display_game.addView(tv);
         }
 
+        tv = new TextView(this);
+        display_game.addView(tv);
+
         int size = university.size();
         for(int i=0; i<size; i++) {
-            TextView tv = new TextView(this);
+            tv = new TextView(this);
             int tile = r.nextInt(university.size());
             tv.setText(university.get(tile).name);
             tv.setTextSize(20);
@@ -128,7 +146,8 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
     }
 
-    private ArrayList<Tile> buildUniversity(int numTiles, String sides) {
+    private ArrayList<Tile> buildUniversity(int numPlayers, String sides) {
+        int numTiles = this.tilesPerPlayer[numPlayers];
         numTiles -= 3;
         ArrayList<Tile> university = new ArrayList<Tile>();
         Random r = new Random();
@@ -139,11 +158,11 @@ public class DisplayGameActivity extends ActionBarActivity {
             else {
                 university.add(new Tile("Council Chamber - B",false,false,false,false));
             }
-            if (r.nextBoolean()) {
-                university.add(new Tile("Infirmary - A",false,false,false,false));
+            if (r.nextBoolean() || numPlayers == 2) {
+                university.add(new Tile("Infirmary - B",false,false,false,false));
             }
             else {
-                university.add(new Tile("Infirmary - B",false,false,false,false));
+                university.add(new Tile("Infirmary - A",false,false,false,false));
             }
             if (r.nextBoolean()) {
                 university.add(new Tile("Library - A",false,false,false,false));
@@ -154,7 +173,8 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
         else if (sides.equals("All A")) {
             university.add(new Tile("Council Chamber - A", false, false, false ,false));
-            university.add(new Tile("Infirmary - A", false, false, false, false));
+            if (numPlayers == 2) { university.add(new Tile("Infirmary - B", false, false,false, false)); }
+            else { university.add(new Tile("Infirmary - A", false, false, false, false)); }
             university.add(new Tile("Library - A", false, false, false, false));
         }
         else {
@@ -163,6 +183,9 @@ public class DisplayGameActivity extends ActionBarActivity {
             university.add(new Tile("Library - B", false, false, false, false));
         }
 
+        if (numPlayers == 2) {
+            this.needsMages = false;
+        }
         if(this.needsGold) {
             Tile tile = this.goldTiles.get(r.nextInt(this.goldTiles.size()));
             university.add(tile);
