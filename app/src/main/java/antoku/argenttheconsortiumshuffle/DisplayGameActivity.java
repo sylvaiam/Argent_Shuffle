@@ -152,16 +152,19 @@ public class DisplayGameActivity extends ActionBarActivity {
             university.remove(tile);
             display_game.addView(tv);
         }
+
         Button advance = new Button(this);
         advance.setText("To the Game!");
         advance.setTextSize(20);
-        final DisplayGameActivity test = this;
-        advance.setOnClickListener(new Button.OnClickListener() {
+        display_game.addView(advance);
+
+        final DisplayGameActivity context = this;
+        advance.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(test, ConsortiumBoard.class);
+                Intent intent = new Intent(context, ConsortiumBoard.class);
+                startActivity(intent);
             }
         });
-        display_game.addView(advance);
     }
 
     private ArrayList<Tile> buildUniversity(int numPlayers, String sides) {
