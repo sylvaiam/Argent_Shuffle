@@ -107,6 +107,7 @@
             android:text="@string/voter_one"
             android:layout_marginBottom="10sp"
             android:onClick="voter_one"
+            android:clickable="true"
             android:id="@+id/three" />
         <TextView
             android:layout_width="match_parent"
@@ -115,6 +116,7 @@
             android:text="@string/voter_two"
             android:layout_marginBottom="10sp"
             android:onClick="voter_two"
+            android:clickable="true"
             android:id="@+id/four" />
         <TextView
             android:layout_width="match_parent"
@@ -123,6 +125,7 @@
             android:text="@string/voter_three"
             android:layout_marginBottom="10sp"
             android:onClick="voter_three"
+            android:clickable="true"
             android:id="@+id/five" />
         <TextView
             android:layout_width="match_parent"
@@ -131,6 +134,7 @@
             android:text="@string/voter_four"
             android:layout_marginBottom="10sp"
             android:onClick="voter_four"
+            android:clickable="true"
             android:id="@+id/six" />
         <TextView
             android:layout_width="match_parent"
@@ -139,6 +143,7 @@
             android:text="@string/voter_five"
             android:layout_marginBottom="10sp"
             android:onClick="voter_five"
+            android:clickable="true"
             android:id="@+id/seven" />
         <TextView
             android:layout_width="match_parent"
@@ -147,6 +152,7 @@
             android:text="@string/voter_six"
             android:layout_marginBottom="10sp"
             android:onClick="voter_six"
+            android:clickable="true"
             android:id="@+id/eight" />
         <TextView
             android:layout_width="match_parent"
@@ -155,6 +161,7 @@
             android:text="@string/voter_seven"
             android:layout_marginBottom="10sp"
             android:onClick="voter_seven"
+            android:clickable="true"
             android:id="@+id/nine" />
         <TextView
             android:layout_width="match_parent"
@@ -163,6 +170,7 @@
             android:text="@string/voter_eight"
             android:layout_marginBottom="10sp"
             android:onClick="voter_eight"
+            android:clickable="true"
             android:id="@+id/ten" />
         <TextView
             android:layout_width="match_parent"
@@ -171,6 +179,7 @@
             android:text="@string/voter_nine"
             android:layout_marginBottom="10sp"
             android:onClick="voter_nine"
+            android:clickable="true"
             android:id="@+id/eleven" />
         <TextView
             android:layout_width="match_parent"
@@ -178,6 +187,7 @@
             android:textSize="20sp"
             android:text="@string/voter_ten"
             android:onClick="voter_ten"
+            android:clickable="true"
             android:id="@+id/twelve" />
     </LinearLayout>
 </ScrollView>

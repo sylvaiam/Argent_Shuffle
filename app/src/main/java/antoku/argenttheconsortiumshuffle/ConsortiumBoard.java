@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,12 +25,14 @@ public class ConsortiumBoard extends ActionBarActivity {
     private Player selectedPlayer;
     private Button selectedButton;
     private Player[] players;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.consortium = new ArrayList<String>();
         this.possibleVoters = new ArrayList<String>();
+        this.toast = Toast.makeText(this, "Press Back again to quit", Toast.LENGTH_SHORT);
 
         Intent intent = getIntent();
         String[] playerArray = intent.getStringExtra(MainActivity.PLAYER_COLORS).split(",");
@@ -268,6 +271,16 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (this.toast.getView().isShown()) {
+            super.onBackPressed();
+        }
+        else {
+            toast.show();
+        }
+    }
+
     private void buildVoterPool(boolean mancersUsed) {
         this.possibleVoters.add("2nd-Most Influence");
         this.possibleVoters.add("2nd-Most Supporters");
@@ -301,6 +314,7 @@ public class ConsortiumBoard extends ActionBarActivity {
             this.voter = vot;
             this.tv = t;
         }
+        @Override
         public void onClick(DialogInterface dialog, int which) {
             switch(which) {
                 case DialogInterface.BUTTON_POSITIVE:
