@@ -28,12 +28,15 @@ public class DisplayGameActivity extends ActionBarActivity {
     private boolean needsGold;
     private boolean needsMages;
     private boolean needsIP;
+    private boolean hasMancers;
 
     private ArrayList<Tile> possibleTiles;
     private ArrayList<Tile> manaTiles;
     private ArrayList<Tile> goldTiles;
     private ArrayList<Tile> influenceTiles;
     private ArrayList<Tile> mageTiles;
+
+    private String playerText;
 
 
     @Override
@@ -44,6 +47,7 @@ public class DisplayGameActivity extends ActionBarActivity {
         this.goldTiles = new ArrayList<Tile>();
         this.influenceTiles = new ArrayList<Tile>();
         this.mageTiles = new ArrayList<Tile>();
+        this.playerText="";
         super.onCreate(savedInstanceState);
 
         //get the information from the previous activity
@@ -51,6 +55,7 @@ public class DisplayGameActivity extends ActionBarActivity {
         int numPlayers = Integer.valueOf(intent.getStringExtra(MainActivity.NUM_PLAYERS));
         String sidesUsed = intent.getStringExtra(MainActivity.SIDES_USED);
         boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
+        this.hasMancers = mancersUsed;
         boolean inclRes = intent.getBooleanExtra(MainActivity.INCLUDE_RESOURCES, false);
         this.needsMages = intent.getBooleanExtra(MainActivity.INCLUDE_MAGE, false);
         boolean scenario = intent.getBooleanExtra(MainActivity.INCLUDE_SCENARIO, false);
@@ -111,6 +116,8 @@ public class DisplayGameActivity extends ActionBarActivity {
         for(int i = 0; i < numPlayers; i++) { //choose which character each player will play as
             tv = new TextView(this);
             int cha = r.nextInt(this.characterColors.size());
+            if(i == 0) { this.playerText = this.characterColors.get(cha); }
+            else { this.playerText += "," + this.characterColors.get(cha); }
             String text = "Player " + i + ": " + this.characterColors.get(cha);
             if(sidesUsed.equals("All A")) {
                 text += " - A";
@@ -152,19 +159,14 @@ public class DisplayGameActivity extends ActionBarActivity {
             university.remove(tile);
             display_game.addView(tv);
         }
+    }
 
-        Button advance = new Button(this);
-        advance.setText("To the Game!");
-        advance.setTextSize(20);
-        display_game.addView(advance);
+    public void pickVoters(View view) {
+        Intent intent = new Intent(this, ConsortiumBoard.class);
+        intent.putExtra(MainActivity.PLAYER_COLORS, this.playerText);
+        intent.putExtra(MainActivity.INCLUDE_MANCERS, this.hasMancers);
 
-        final DisplayGameActivity context = this;
-        advance.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ConsortiumBoard.class);
-                startActivity(intent);
-            }
-        });
+        startActivity(intent);
     }
 
     private ArrayList<Tile> buildUniversity(int numPlayers, String sides) {

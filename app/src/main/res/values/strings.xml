@@ -12,6 +12,19 @@
     <string name="include_scenario">Include Scenario</string>
     <string name="include_white">Include Neutral Candidate</string>
     <string name="submit">Go!</string>
+    <string name="pick_voters">To the Game!</string>
+    <string name="ip_up">IP Up</string>
+    <string name="ip_down">IP Down</string>
+    <string name="voter_one">Hidden Voter 1</string>
+    <string name="voter_two">Hidden Voter 2</string>
+    <string name="voter_three">Hidden Voter 3</string>
+    <string name="voter_four">Hidden Voter 4</string>
+    <string name="voter_five">Hidden Voter 5</string>
+    <string name="voter_six">Hidden Voter 6</string>
+    <string name="voter_seven">Hidden Voter 7</string>
+    <string name="voter_eight">Hidden Voter 8</string>
+    <string name="voter_nine">Hidden Voter 9</string>
+    <string name="voter_ten">Hidden Voter 10</string>
 
     <string-array name="player_possibilities">
         <item>2</item>
