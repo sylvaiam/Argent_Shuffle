@@ -1,5 +1,7 @@
 package antoku.argenttheconsortiumshuffle;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
@@ -20,6 +22,7 @@ public class ConsortiumBoard extends ActionBarActivity {
     private ArrayList<String> consortium;
     private ArrayList<String> possibleVoters;
     private Player selectedPlayer;
+    private Button selectedButton;
     private Player[] players;
 
     @Override
@@ -35,33 +38,19 @@ public class ConsortiumBoard extends ActionBarActivity {
         buildVoterPool(mancersUsed);
 
         setContentView(R.layout.activity_consortium_board);
-
-        LinearLayout display = (LinearLayout)findViewById(R.id.display_game);
-        TextView tv;
-        String text="";
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
         for (int i = 0; i < playerArray.length; i++) {
-            String s = playerArray[i];
-            tv = new TextView(this);
-            tv.setText(s + " " + convertPlayer(s));
-            text += "<font color='" + s + "'>player </font>";
-            tv.setBackgroundColor(colorToInt(s));
-            tv.setTextColor(textColor(s));
-            tv.setTextSize(20);
-            display.addView(tv);
-            Player p = new Player(s);
-            this.players[i] = p;
+            this.players[i] = new Player(playerArray[i]);
         }
         this.selectedPlayer = this.players[0];
-
-        tv = new TextView(this);
-        tv.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
-        ((TextView)findViewById(R.id.one)).setText(Html.fromHtml(text),TextView.BufferType.SPANNABLE);
-        tv.setTextSize(20);
-        display.addView(tv);
+        this.selectedButton = (Button)findViewById(R.id.button_player_one);
+        setIPButtonColor();
 
         Button curBut;
-        curBut = (Button)findViewById(R.id.button_player_one);
+        curBut = (Button)this.selectedButton;
         setButtonText(curBut, 0);
 
         curBut = (Button)findViewById(R.id.button_player_two);
@@ -95,35 +84,127 @@ public class ConsortiumBoard extends ActionBarActivity {
         curBut.setText(convertPlayer(col) + " " + 5);
     }
 
-    public void voter_one(View view) {
+    public void setIPButtonColor() {
+        String col = this.selectedPlayer.color;
+        ((Button)findViewById(R.id.ip_up)).setBackgroundColor(colorToInt(col));
+        ((Button)findViewById(R.id.ip_up)).setTextColor(textColor(col));
+        ((Button)findViewById(R.id.ip_down)).setBackgroundColor(colorToInt(col));
+        ((Button)findViewById(R.id.ip_down)).setTextColor(textColor(col));
+    }
 
+    public void ipUp(View view) {
+        this.selectedPlayer.influence += 1;
+        this.selectedButton.setText(convertPlayer(this.selectedPlayer.color) + " " + this.selectedPlayer.influence);
+        if(this.selectedPlayer.influence % 7 == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You gain a Merit Badge!").setPositiveButton("Okay", null).show();
+        }
+    }
+
+    public void ipDown(View view) {
+        if(this.selectedPlayer.influence % 7 == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Lose an unused Merit Badge (or a used one, if all used)").setPositiveButton("Okay", null).show();
+        }
+        this.selectedPlayer.influence -= 1;
+        this.selectedButton.setText(convertPlayer(this.selectedPlayer.color) + " " + this.selectedPlayer.influence);
+    }
+
+    public void voter_one(View view) {
+        askVoter(2, (TextView)findViewById(R.id.three));
     }
     public void voter_two(View view) {
-
+        askVoter(3, (TextView)findViewById(R.id.four));
     }
     public void voter_three(View view) {
-
+        askVoter(4, (TextView)findViewById(R.id.five));
     }
     public void voter_four(View view) {
-
+        askVoter(5, (TextView)findViewById(R.id.six));
     }
     public void voter_five(View view) {
-
+        askVoter(6, (TextView)findViewById(R.id.seven));
     }
     public void voter_six(View view) {
-
+        askVoter(7, (TextView)findViewById(R.id.eight));
     }
     public void voter_seven(View view) {
-
+        askVoter(8, (TextView)findViewById(R.id.nine));
     }
     public void voter_eight(View view) {
-
+        askVoter(9, (TextView)findViewById(R.id.ten));
     }
     public void voter_nine(View view) {
-
+        askVoter(10, (TextView)findViewById(R.id.eleven));
     }
     public void voter_ten(View view) {
+        askVoter(11, (TextView)findViewById(R.id.twelve));
+    }
 
+    public void player_one_clicked(View view) {
+        this.selectedPlayer = this.players[0];
+        this.selectedButton = (Button)findViewById(R.id.button_player_one);
+        setIPButtonColor();
+    }
+    public void player_two_clicked(View view) {
+        this.selectedPlayer = this.players[1];
+        this.selectedButton = (Button)findViewById(R.id.button_player_two);
+        setIPButtonColor();
+    }
+    public void player_three_clicked(View view) {
+        this.selectedPlayer = this.players[2];
+        this.selectedButton = (Button)findViewById(R.id.button_player_three);
+        setIPButtonColor();
+    }
+    public void player_four_clicked(View view) {
+        this.selectedPlayer = this.players[3];
+        this.selectedButton = (Button)findViewById(R.id.button_player_four);
+        setIPButtonColor();
+    }
+    public void player_five_clicked(View view) {
+        this.selectedPlayer = this.players[4];
+        this.selectedButton = (Button)findViewById(R.id.button_player_five);
+        setIPButtonColor();
+    }
+    public void player_six_clicked(View view) {
+        this.selectedPlayer = this.players[5];
+        this.selectedButton = (Button)findViewById(R.id.button_player_six);
+        setIPButtonColor();
+    }
+
+    private void askVoter(int voter, TextView tv) {
+        if (this.selectedPlayer.marks[voter]) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(this.consortium.get(voter)).setPositiveButton("Okay", null).show();
+        }
+        else {
+            MyClickListener t = new MyClickListener(this, voter, tv);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Would you like to mark this voter?").setPositiveButton("Yes", t)
+                    .setNegativeButton("No", t).show();
+        }
+    }
+
+    public void markVoter(int voter, TextView tv) {
+        this.selectedPlayer.marks[voter] = true;
+        boolean allMarked = true;
+        String text = "Hidden Voter " + (voter - 1);
+        for (Player player : players) {
+            if(player.marks[voter]) {
+                text += " <font color='" + player.color + "'>" + convertPlayer(player.color) + "</font>";
+            }
+            else {
+                allMarked = false;
+                text += "  ";
+            }
+        }
+        if (allMarked) {
+            tv.setText(this.consortium.get(voter));
+        }
+        else {
+            tv.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
+        }
+        this.askVoter(voter, tv);
     }
 
     private String convertPlayer(String color) {
@@ -208,6 +289,24 @@ public class ConsortiumBoard extends ActionBarActivity {
         if (mancersUsed) {
             this.possibleVoters.add("Most Technomancy");
             this.possibleVoters.add("Owner of the Archmage's Staff");
+        }
+    }
+
+    private class MyClickListener implements DialogInterface.OnClickListener {
+        ConsortiumBoard consortiumBoard;
+        int voter;
+        TextView tv;
+        public MyClickListener(ConsortiumBoard cb, int vot, TextView t) {
+            this.consortiumBoard = cb;
+            this.voter = vot;
+            this.tv = t;
+        }
+        public void onClick(DialogInterface dialog, int which) {
+            switch(which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    this.consortiumBoard.markVoter(this.voter, this.tv);
+                    break;
+            }
         }
     }
 }

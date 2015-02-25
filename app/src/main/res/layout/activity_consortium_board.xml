@@ -22,17 +22,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="player_one_clicked"
                 android:id="@+id/button_player_one" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="player_two_clicked"
                 android:id="@+id/button_player_two" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="invisible"
+                android:onClick="player_three_clicked"
                 android:id="@+id/button_player_three" />
         </LinearLayout>
         <LinearLayout
@@ -45,18 +48,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="invisible"
+                android:onClick="player_four_clicked"
                 android:id="@+id/button_player_four" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="invisible"
+                android:onClick="player_five_clicked"
                 android:id="@+id/button_player_five" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="invisible"
+                android:onClick="player_six_clicked"
                 android:id="@+id/button_player_six" />
         </LinearLayout>
         <LinearLayout
@@ -68,12 +74,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ip_down"
+                android:layout_marginRight="5sp"
+                android:layout_marginEnd="0dp"
+                android:onClick="ipDown"
                 android:id="@+id/ip_down" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/ip_up"
+                android:layout_marginLeft="5sp"
+                android:layout_marginStart="0dp"
+                android:onClick="ipUp"
                 android:id="@+id/ip_up" />
         </LinearLayout>
         <TextView
@@ -94,6 +106,7 @@
             android:textSize="20sp"
             android:text="@string/voter_one"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_one"
             android:id="@+id/three" />
         <TextView
             android:layout_width="match_parent"
@@ -101,6 +114,7 @@
             android:textSize="20sp"
             android:text="@string/voter_two"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_two"
             android:id="@+id/four" />
         <TextView
             android:layout_width="match_parent"
@@ -108,6 +122,7 @@
             android:textSize="20sp"
             android:text="@string/voter_three"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_three"
             android:id="@+id/five" />
         <TextView
             android:layout_width="match_parent"
@@ -115,6 +130,7 @@
             android:textSize="20sp"
             android:text="@string/voter_four"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_four"
             android:id="@+id/six" />
         <TextView
             android:layout_width="match_parent"
@@ -122,6 +138,7 @@
             android:textSize="20sp"
             android:text="@string/voter_five"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_five"
             android:id="@+id/seven" />
         <TextView
             android:layout_width="match_parent"
@@ -129,6 +146,7 @@
             android:textSize="20sp"
             android:text="@string/voter_six"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_six"
             android:id="@+id/eight" />
         <TextView
             android:layout_width="match_parent"
@@ -136,6 +154,7 @@
             android:textSize="20sp"
             android:text="@string/voter_seven"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_seven"
             android:id="@+id/nine" />
         <TextView
             android:layout_width="match_parent"
@@ -143,6 +162,7 @@
             android:textSize="20sp"
             android:text="@string/voter_eight"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_eight"
             android:id="@+id/ten" />
         <TextView
             android:layout_width="match_parent"
@@ -150,12 +170,14 @@
             android:textSize="20sp"
             android:text="@string/voter_nine"
             android:layout_marginBottom="10sp"
+            android:onClick="voter_nine"
             android:id="@+id/eleven" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/voter_ten"
+            android:onClick="voter_ten"
             android:id="@+id/twelve" />
     </LinearLayout>
 </ScrollView>

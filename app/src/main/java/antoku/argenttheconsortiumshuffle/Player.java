@@ -5,7 +5,7 @@ package antoku.argenttheconsortiumshuffle;
  */
 public class Player {
     public int influence;
-    public boolean[] marks = new boolean[] { false, false, false, false, false, false, false, false, false, false };
+    public boolean[] marks = new boolean[] { true, true, false, false, false, false, false, false, false, false, false, false };
     public String color;
 
     public Player(String col) {
