@@ -194,7 +194,13 @@ public class ConsortiumBoard extends ActionBarActivity {
         String text = "Hidden Voter " + (voter - 1);
         for (Player player : players) {
             if(player.marks[voter]) {
-                text += " <font color='" + player.color + "'>" + convertPlayer(player.color) + "</font>";
+                String col;
+                switch(player.color) {
+                    case "Orange": col = "#ffa500"; break;
+                    case "White": col = "Black"; break;
+                    default: col = player.color; break;
+                }
+                text += " <font color='" + col + "'>" + convertPlayer(player.color) + "</font>";
             }
             else {
                 allMarked = false;
