@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,10 +37,11 @@ public class DisplayGameActivity extends ActionBarActivity {
 
     private String playerText;
 
+    private int firstPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //TODO: consortium board. pick 10 random consortium members, be able to mark them per player, keep track of influence, make it visible who's at what influence and who has marked whom
         this.possibleTiles = new ArrayList<Tile>();
         this.manaTiles = new ArrayList<Tile>();
         this.goldTiles = new ArrayList<Tile>();
@@ -111,7 +111,7 @@ public class DisplayGameActivity extends ActionBarActivity {
 
         Random r = new Random();
         TextView tv;
-        int first = r.nextInt(numPlayers); //select which player will be first player
+        this.firstPlayer = r.nextInt(numPlayers); //select which player will be first player
 
         for(int i = 0; i < numPlayers; i++) { //choose which character each player will play as
             tv = new TextView(this);
@@ -128,7 +128,7 @@ public class DisplayGameActivity extends ActionBarActivity {
             else {
                 text += " - A";
             }
-            if (i == first) {
+            if (i == this.firstPlayer) {
                 text += " Goes First";
             }
             tv.setText(text);
@@ -165,6 +165,7 @@ public class DisplayGameActivity extends ActionBarActivity {
         Intent intent = new Intent(this, ConsortiumBoard.class);
         intent.putExtra(MainActivity.PLAYER_COLORS, this.playerText);
         intent.putExtra(MainActivity.INCLUDE_MANCERS, this.hasMancers);
+        intent.putExtra(MainActivity.FIRST_PLAYER, this.firstPlayer);
 
         startActivity(intent);
     }

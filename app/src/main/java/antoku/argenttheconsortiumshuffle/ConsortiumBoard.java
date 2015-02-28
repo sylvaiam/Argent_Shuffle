@@ -10,7 +10,6 @@ import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +37,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         String[] playerArray = intent.getStringExtra(MainActivity.PLAYER_COLORS).split(",");
         this.players = new Player[playerArray.length];
         boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
+        int firstPlayer = intent.getIntExtra(MainActivity.FIRST_PLAYER, 0);
         buildVoterPool(mancersUsed);
 
         setContentView(R.layout.activity_consortium_board);
@@ -53,24 +53,24 @@ public class ConsortiumBoard extends ActionBarActivity {
         setIPButtonColor();
 
         Button curBut;
-        curBut = (Button)this.selectedButton;
-        setButtonText(curBut, 0);
+        curBut = this.selectedButton;
+        setButtonText(curBut, 0, firstPlayer);
 
         curBut = (Button)findViewById(R.id.button_player_two);
-        setButtonText(curBut, 1);
+        setButtonText(curBut, 1, firstPlayer);
 
         if(playerArray.length > 2) {
             curBut = (Button)findViewById(R.id.button_player_three);
-            setButtonText(curBut, 2);
+            setButtonText(curBut, 2, firstPlayer);
             if (playerArray.length > 3) {
                 curBut = (Button)findViewById(R.id.button_player_four);
-                setButtonText(curBut, 3);
+                setButtonText(curBut, 3, firstPlayer);
                 if (playerArray.length > 4) {
                     curBut = (Button)findViewById(R.id.button_player_five);
-                    setButtonText(curBut, 4);
+                    setButtonText(curBut, 4, firstPlayer);
                     if (playerArray.length > 5) {
                         curBut = (Button)findViewById(R.id.button_player_six);
-                        setButtonText(curBut, 5);
+                        setButtonText(curBut, 5, firstPlayer);
                     }
                 }
             }
@@ -79,12 +79,18 @@ public class ConsortiumBoard extends ActionBarActivity {
         buildConsortium();
     }
 
-    public void setButtonText(Button curBut, int player) {
+    public void setButtonText(Button curBut, int player, int firstPlayer) {
+        this.players[player].button = curBut;
         String col = this.players[player].color;
+        int rank = firstPlayer - player;
+        if (player >= firstPlayer) {
+            rank += this.players.length;
+        }
+        this.players[player].rank = rank;
         curBut.setBackgroundColor(colorToInt(col));
         curBut.setTextColor(textColor(col));
         curBut.setVisibility(Button.VISIBLE);
-        curBut.setText(convertPlayer(col) + " " + 5);
+        curBut.setText(convertPlayer(col) + " " + 5 + " (" + rank + ")");
     }
 
     public void setIPButtonColor() {
@@ -96,8 +102,18 @@ public class ConsortiumBoard extends ActionBarActivity {
     }
 
     public void ipUp(View view) {
+        int originalRank = this.selectedPlayer.rank;
+        for (Player player : this.players) {
+            if (!player.equals(this.selectedPlayer)) {
+                if (player.influence == this.selectedPlayer.influence && player.rank < originalRank) {
+                    this.selectedPlayer.rank--;
+                    player.rank++;
+                    setInfText(player);
+                }
+            }
+        }
         this.selectedPlayer.influence += 1;
-        this.selectedButton.setText(convertPlayer(this.selectedPlayer.color) + " " + this.selectedPlayer.influence);
+        setInfText(this.selectedPlayer);
         if(this.selectedPlayer.influence % 7 == 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You gain a Merit Badge!").setPositiveButton("Okay", null).show();
@@ -105,16 +121,40 @@ public class ConsortiumBoard extends ActionBarActivity {
     }
 
     public void ipDown(View view) {
+        int originalRank = this.selectedPlayer.rank;
+        for (Player player : this.players) {
+            if (!player.equals(this.selectedPlayer)) {
+                if (player.influence == this.selectedPlayer.influence && player.rank > originalRank) {
+                    this.selectedPlayer.rank++;
+                    player.rank--;
+                    setInfText(player);
+                }
+            }
+        }
         if(this.selectedPlayer.influence % 7 == 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Lose an unused Merit Badge (or a used one, if all used)").setPositiveButton("Okay", null).show();
         }
         this.selectedPlayer.influence -= 1;
-        this.selectedButton.setText(convertPlayer(this.selectedPlayer.color) + " " + this.selectedPlayer.influence);
+        for (Player player : this.players) {
+            if (!player.equals(this.selectedPlayer)) {
+                if (player.influence == this.selectedPlayer.influence) {
+                    this.selectedPlayer.rank++;
+                    player.rank--;
+                    setInfText(player);
+                }
+            }
+        }
+        setInfText(this.selectedPlayer);
+    }
+
+    public void setInfText(Player p) {
+        String text = convertPlayer(p.color) + " " + p.influence;
+        p.setButText(text);
     }
 
     public void voter_one(View view) {
-        askVoter(2, (TextView)findViewById(R.id.three));
+        askVoter(2, (TextView) findViewById(R.id.three));
     }
     public void voter_two(View view) {
         askVoter(3, (TextView)findViewById(R.id.four));

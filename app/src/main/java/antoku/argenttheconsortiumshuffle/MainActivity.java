@@ -19,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
     public final static String INCLUDE_SCENARIO = "com.antoku.ArgentShuffle.INCLUDE_SCENARIO";
     public final static String INCLUDE_WHITE = "com.antoku.ArgentShuffle.INCLUDE_WHITE";
     public final static String PLAYER_COLORS = "com.antoku.ArgentShuffle.PLAYER_COLORS";
+    public final static String FIRST_PLAYER = "com.antoku.ArgentShuffle.FIRST_PLAYER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
