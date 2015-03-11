@@ -7,8 +7,9 @@
     <string name="player_count">Num players:</string>
     <string name="sides_used">Sides:</string>
     <string name="include_mancers">Include Mancer\'s Expansion</string>
-    <string name="include_plus_mage">Include Mage Recruit</string>
-    <string name="include_resources">Include All Resources</string>
+    <string name="include_plus_mage">Include Gain a Mage Tile</string>
+    <string name="include_resources">Include Gain Mana, Gold, and IP Tiles</string>
+    <string name="include_archmage">Include Archmage\'s Staff and Voter</string>
     <string name="include_scenario">Include Scenario</string>
     <string name="include_white">Include Neutral Candidate</string>
     <string name="submit">Go!</string>

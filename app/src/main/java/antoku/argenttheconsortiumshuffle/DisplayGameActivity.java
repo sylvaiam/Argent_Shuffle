@@ -1,12 +1,16 @@
 
 package antoku.argenttheconsortiumshuffle;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,20 +26,21 @@ public class DisplayGameActivity extends ActionBarActivity {
             "The Well of Souls", "Summer Break" };
     private ArrayList<String> characterColors = new ArrayList<String>(Arrays.asList(new String[]
             { "Blue", "Grey", "Green", "Red", "Purple", "White", "Orange"}));
+    private String[] possibleColors;
+    private int[] newIds;
 
     private boolean needsMana;
     private boolean needsGold;
     private boolean needsMages;
     private boolean needsIP;
     private boolean hasMancers;
+    private boolean hasArchmage;
 
     private ArrayList<Tile> possibleTiles;
     private ArrayList<Tile> manaTiles;
     private ArrayList<Tile> goldTiles;
     private ArrayList<Tile> influenceTiles;
     private ArrayList<Tile> mageTiles;
-
-    private String playerText;
 
     private int firstPlayer;
 
@@ -47,7 +52,6 @@ public class DisplayGameActivity extends ActionBarActivity {
         this.goldTiles = new ArrayList<Tile>();
         this.influenceTiles = new ArrayList<Tile>();
         this.mageTiles = new ArrayList<Tile>();
-        this.playerText="";
         super.onCreate(savedInstanceState);
 
         //get the information from the previous activity
@@ -60,6 +64,9 @@ public class DisplayGameActivity extends ActionBarActivity {
         this.needsMages = intent.getBooleanExtra(MainActivity.INCLUDE_MAGE, false);
         boolean scenario = intent.getBooleanExtra(MainActivity.INCLUDE_SCENARIO, false);
         boolean white = intent.getBooleanExtra(MainActivity.INCLUDE_WHITE, false);
+        this.hasArchmage = intent.getBooleanExtra(MainActivity.INCLUDE_ARCHMAGE, false);
+
+        this.newIds = new int[numPlayers];
 
         //mark each individual resource as needed
         if(inclRes) {
@@ -109,24 +116,78 @@ public class DisplayGameActivity extends ActionBarActivity {
             }
         }
 
+        //maintain all the possible colors for indexing purposes
+        this.possibleColors = new String[this.characterColors.size()];
+        this.possibleColors = this.characterColors.toArray(this.possibleColors);
+
         Random r = new Random();
         TextView tv;
+        Spinner s;
+        String text;
         this.firstPlayer = r.nextInt(numPlayers); //select which player will be first player
 
-        for(int i = 0; i < numPlayers; i++) { //choose which character each player will play as
+        //Mage Powers block
+        tv = new TextView(this);
+        tv.setText("Mage Powers:");
+        tv.setTextSize(20);
+        display_game.addView(tv);
+
+        //for each mage type, select power A or B
+        for (int i = 0; i < this.possibleColors.length; i++) {
+            String col; String color = this.possibleColors[i];
+            if (color.equals("White")) continue; //neutral mages have no powers
             tv = new TextView(this);
-            int cha = r.nextInt(this.characterColors.size());
-            if(i == 0) { this.playerText = this.characterColors.get(cha); }
-            else { this.playerText += "," + this.characterColors.get(cha); }
-            String text = "Player " + i + ": " + this.characterColors.get(cha);
+            switch(color) { //orange isn't an HTML color in android
+                case "Orange": col = "#ffa500"; break;
+                default: col = color; break;
+            }
+
+            //add color to the department name
+            text = "<font color='" + col + "'>" + colorToDepartment(color) + "</font> -";
             if(sidesUsed.equals("All A")) {
-                text += " - A";
+                text += " Side A";
             }
             else if(sidesUsed.equals("All B") || r.nextBoolean()) {
-                text += " - B";
+                text += " Side B";
             }
             else {
-                text += " - A";
+                text += " Side A";
+            }
+            tv.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
+            tv.setTextSize(20);
+            display_game.addView(tv);
+        }
+        tv = new TextView(this);
+        display_game.addView(tv);
+
+        //Player Department block
+        tv = new TextView(this);
+        tv.setText("Player Colors:");
+        tv.setTextSize(20);
+        display_game.addView(tv);
+
+        for(int i = 0; i < numPlayers; i++) { //choose which character each player will play as
+            s = new Spinner(this);
+            tv = new TextView(this);
+            int cha = r.nextInt(this.characterColors.size());
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.possibleColors);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            s.setAdapter(spinnerAdapter);
+            s.setSelection(spinnerAdapter.getPosition(this.characterColors.get(cha)));
+            int newId;
+            //generate a unique id for each spinner
+            newId = i + 1;
+            s.setId(newId);
+            this.newIds[i] = newId;
+            text = "Player " + i + ": ";
+            if(sidesUsed.equals("All A")) {
+                text += " Side A";
+            }
+            else if(sidesUsed.equals("All B") || r.nextBoolean()) {
+                text += " Side B";
+            }
+            else {
+                text += " Side A";
             }
             if (i == this.firstPlayer) {
                 text += " Goes First";
@@ -135,11 +196,12 @@ public class DisplayGameActivity extends ActionBarActivity {
             tv.setTextSize(20);
             this.characterColors.remove(cha); //remove selected character from future consideration
             display_game.addView(tv);
+            display_game.addView(s);
         }
 
         if(scenario) { //choose a raondom scenario if being used this game
             tv = new TextView(this);
-            String text = "Will be playing the \"";
+            text = "Will be playing the \"";
             text += this.scenarios[r.nextInt(this.scenarios.length)];
             text += "\" Scenario";
             tv.setText(text);
@@ -149,6 +211,27 @@ public class DisplayGameActivity extends ActionBarActivity {
 
         tv = new TextView(this);
         display_game.addView(tv);
+        tv = new TextView(this);
+        tv.setText("Tiles Chosen:");
+        tv.setTextSize(20);
+        display_game.addView(tv);
+
+        if(this.hasArchmage) {//choose which side of the staff to use (B side isn't a mana tile, even though you can gain mana from it)
+            tv = new TextView(this);
+            text = "Archmage's Staff - ";
+            if(sidesUsed.equals("All A")) {
+                text += " Side A";
+            }
+            else if(sidesUsed.equals("All B") || r.nextBoolean()) {
+                text += " Side B";
+            }
+            else {
+                text += " Side A";
+            }
+            tv.setText(text);
+            tv.setTextSize(20);
+            display_game.addView(tv);
+        }
 
         int size = university.size();
         for(int i=0; i<size; i++) { //shuffle the order of the university tiles
@@ -161,11 +244,43 @@ public class DisplayGameActivity extends ActionBarActivity {
         }
     }
 
+    private String colorToDepartment(String color) {
+        switch (color) {
+            case "Red": return "Sorcery";
+            case "Blue": return "Divinity";
+            case "Grey": return "Mysticism";
+            case "Green": return "Natural Magick";
+            case "Purple": return "Planar Studies";
+            case "Orange": return "Technomancy";
+            case "White": return "Neutral";
+            default: return "err";
+        }
+    }
+
     public void pickVoters(View view) {
+        String colors = "";
+        String playerText = "";
+        for (int i = 0; i < this.newIds.length; i++) {
+            Spinner s = (Spinner)findViewById(this.newIds[i]);
+            int selected = s.getSelectedItemPosition();
+            if (colors.contains("" + selected)) {//make sure there are no repeat colors
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Player " + i + " has a repeat color with " + colors.indexOf("" + selected) + ".").setPositiveButton("Okay", null).show();
+                return;
+            }
+            colors += selected;
+            if (i == 0) {
+                playerText += this.possibleColors[selected];
+            }
+            else {
+                playerText += "," + this.possibleColors[selected];
+            }
+        }
         Intent intent = new Intent(this, ConsortiumBoard.class);
-        intent.putExtra(MainActivity.PLAYER_COLORS, this.playerText);
+        intent.putExtra(MainActivity.PLAYER_COLORS, playerText);
         intent.putExtra(MainActivity.INCLUDE_MANCERS, this.hasMancers);
         intent.putExtra(MainActivity.FIRST_PLAYER, this.firstPlayer);
+        intent.putExtra(MainActivity.INCLUDE_ARCHMAGE, this.hasArchmage);
 
         startActivity(intent);
     }

@@ -20,6 +20,7 @@ public class MainActivity extends ActionBarActivity {
     public final static String INCLUDE_WHITE = "com.antoku.ArgentShuffle.INCLUDE_WHITE";
     public final static String PLAYER_COLORS = "com.antoku.ArgentShuffle.PLAYER_COLORS";
     public final static String FIRST_PLAYER = "com.antoku.ArgentShuffle.FIRST_PLAYER";
+    public final static String INCLUDE_ARCHMAGE = "com.antoku.ArgentShuffle.INCLUDE_ARCHMAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
         CheckBox mages = (CheckBox) findViewById(R.id.checkBox_mages);
         CheckBox scenario = (CheckBox) findViewById(R.id.checkBox_scenario);
         CheckBox white = (CheckBox) findViewById(R.id.checkbox_white);
+        CheckBox archmage = (CheckBox) findViewById(R.id.checkbox_archmage);
 
         //pass the values to the next screen
         intent.putExtra(NUM_PLAYERS, numPlayers.getSelectedItem().toString());
@@ -58,6 +60,7 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra(INCLUDE_MAGE, mages.isChecked());
         intent.putExtra(INCLUDE_SCENARIO, scenario.isChecked());
         intent.putExtra(INCLUDE_WHITE, white.isChecked());
+        intent.putExtra(INCLUDE_ARCHMAGE, archmage.isChecked());
 
         startActivity(intent);
     }

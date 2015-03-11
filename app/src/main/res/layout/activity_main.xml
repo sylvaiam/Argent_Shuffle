@@ -43,6 +43,13 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/include_white"
+        android:id="@+id/checkbox_white"
+        android:textSize="20sp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/include_mancers"
         android:id="@+id/checkBox_mancers"
         android:textSize="20sp" />
@@ -50,8 +57,8 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/include_white"
-        android:id="@+id/checkbox_white"
+        android:text="@string/include_archmage"
+        android:id="@+id/checkbox_archmage"
         android:textSize="20sp" />
 
     <CheckBox

@@ -22,7 +22,6 @@ public class ConsortiumBoard extends ActionBarActivity {
     private ArrayList<String> consortium;
     private ArrayList<String> possibleVoters;
     private Player selectedPlayer;
-    private Button selectedButton;
     private Player[] players;
     private Toast toast;
 
@@ -37,11 +36,13 @@ public class ConsortiumBoard extends ActionBarActivity {
         String[] playerArray = intent.getStringExtra(MainActivity.PLAYER_COLORS).split(",");
         this.players = new Player[playerArray.length];
         boolean mancersUsed = intent.getBooleanExtra(MainActivity.INCLUDE_MANCERS, false);
+        boolean hasArchmage = intent.getBooleanExtra(MainActivity.INCLUDE_ARCHMAGE, false);
         int firstPlayer = intent.getIntExtra(MainActivity.FIRST_PLAYER, 0);
-        buildVoterPool(mancersUsed);
+        buildVoterPool(mancersUsed, hasArchmage);
 
         setContentView(R.layout.activity_consortium_board);
         if(getSupportActionBar() != null) {
+            //hide the "back" button in the action bar
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
@@ -49,16 +50,17 @@ public class ConsortiumBoard extends ActionBarActivity {
             this.players[i] = new Player(playerArray[i]);
         }
         this.selectedPlayer = this.players[0];
-        this.selectedButton = (Button)findViewById(R.id.button_player_one);
         setIPButtonColor();
 
         Button curBut;
-        curBut = this.selectedButton;
+        //all games have at least 2 players
+        curBut = (Button)findViewById(R.id.button_player_one);
         setButtonText(curBut, 0, firstPlayer);
 
         curBut = (Button)findViewById(R.id.button_player_two);
         setButtonText(curBut, 1, firstPlayer);
 
+        //if there's more than 2 players, initialize their buttons
         if(playerArray.length > 2) {
             curBut = (Button)findViewById(R.id.button_player_three);
             setButtonText(curBut, 2, firstPlayer);
@@ -80,8 +82,11 @@ public class ConsortiumBoard extends ActionBarActivity {
     }
 
     public void setButtonText(Button curBut, int player, int firstPlayer) {
+        //set the player's button
         this.players[player].button = curBut;
         String col = this.players[player].color;
+        //set the player's rank based on which is the start player
+        //start player rank = last; the person to their right = first
         int rank = firstPlayer - player;
         if (player >= firstPlayer) {
             rank += this.players.length;
@@ -90,7 +95,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         curBut.setBackgroundColor(colorToInt(col));
         curBut.setTextColor(textColor(col));
         curBut.setVisibility(Button.VISIBLE);
-        curBut.setText(convertPlayer(col) + " " + 5 + " (" + rank + ")");
+        this.players[player].setButText(convertPlayer(col) + " " + 5);
     }
 
     public void setIPButtonColor() {
@@ -102,9 +107,12 @@ public class ConsortiumBoard extends ActionBarActivity {
     }
 
     public void ipUp(View view) {
+        //increase the selected player's influence
         int originalRank = this.selectedPlayer.rank;
         for (Player player : this.players) {
             if (!player.equals(this.selectedPlayer)) {
+                //for each player who had the same amount of influence as the selected player, and was
+                //higher in rank, the selected player's rank increases
                 if (player.influence == this.selectedPlayer.influence && player.rank < originalRank) {
                     this.selectedPlayer.rank--;
                     player.rank++;
@@ -118,12 +126,16 @@ public class ConsortiumBoard extends ActionBarActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You gain a Merit Badge!").setPositiveButton("Okay", null).show();
         }
+        //no need to change rank again; if you reach 10 influence after someone else, you're still behind them
     }
 
     public void ipDown(View view) {
+        //decrease the selected player's influence
         int originalRank = this.selectedPlayer.rank;
         for (Player player : this.players) {
             if (!player.equals(this.selectedPlayer)) {
+                //for each player who had the same amount of influence as the selected player, and was
+                //lower in rank, the selected player's rank decreases
                 if (player.influence == this.selectedPlayer.influence && player.rank > originalRank) {
                     this.selectedPlayer.rank++;
                     player.rank--;
@@ -136,6 +148,7 @@ public class ConsortiumBoard extends ActionBarActivity {
             builder.setMessage("Lose an unused Merit Badge (or a used one, if all used)").setPositiveButton("Okay", null).show();
         }
         this.selectedPlayer.influence -= 1;
+        //now, since you're the newcomer on a previous square, your rank is below everyone who made it there first
         for (Player player : this.players) {
             if (!player.equals(this.selectedPlayer)) {
                 if (player.influence == this.selectedPlayer.influence) {
@@ -153,6 +166,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         p.setButText(text);
     }
 
+    //hidden voter presses. all do basically the same thing
     public void voter_one(View view) {
         askVoter(2, (TextView) findViewById(R.id.three));
     }
@@ -184,42 +198,39 @@ public class ConsortiumBoard extends ActionBarActivity {
         askVoter(11, (TextView)findViewById(R.id.twelve));
     }
 
+    //player change button presses. also do the same thing.
     public void player_one_clicked(View view) {
         this.selectedPlayer = this.players[0];
-        this.selectedButton = (Button)findViewById(R.id.button_player_one);
         setIPButtonColor();
     }
     public void player_two_clicked(View view) {
         this.selectedPlayer = this.players[1];
-        this.selectedButton = (Button)findViewById(R.id.button_player_two);
         setIPButtonColor();
     }
     public void player_three_clicked(View view) {
         this.selectedPlayer = this.players[2];
-        this.selectedButton = (Button)findViewById(R.id.button_player_three);
         setIPButtonColor();
     }
     public void player_four_clicked(View view) {
         this.selectedPlayer = this.players[3];
-        this.selectedButton = (Button)findViewById(R.id.button_player_four);
         setIPButtonColor();
     }
     public void player_five_clicked(View view) {
         this.selectedPlayer = this.players[4];
-        this.selectedButton = (Button)findViewById(R.id.button_player_five);
         setIPButtonColor();
     }
     public void player_six_clicked(View view) {
         this.selectedPlayer = this.players[5];
-        this.selectedButton = (Button)findViewById(R.id.button_player_six);
         setIPButtonColor();
     }
 
     private void askVoter(int voter, TextView tv) {
+        //if the selected player has marked this voter already, just tell them what it is
         if (this.selectedPlayer.marks[voter]) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(this.consortium.get(voter)).setPositiveButton("Okay", null).show();
         }
+        //otherwise, verify if they would like to mark this voter (for accidental presses)
         else {
             MyClickListener t = new MyClickListener(this, voter, tv);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -232,6 +243,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         this.selectedPlayer.marks[voter] = true;
         boolean allMarked = true;
         String text = "Hidden Voter " + (voter - 1);
+
         for (Player player : players) {
             if(player.marks[voter]) {
                 String col;
@@ -240,6 +252,7 @@ public class ConsortiumBoard extends ActionBarActivity {
                     case "White": col = "Black"; break;
                     default: col = player.color; break;
                 }
+                //for each player that has marked this voter, add their department's symbol in their department's color
                 text += " <font color='" + col + "'>" + convertPlayer(player.color) + "</font>";
             }
             else {
@@ -247,16 +260,20 @@ public class ConsortiumBoard extends ActionBarActivity {
                 text += "  ";
             }
         }
+        //if all players have marked this voter, just display it
         if (allMarked) {
             tv.setText(this.consortium.get(voter));
         }
+        //otherwise show which have marked it
         else {
             tv.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
         }
+        //then, display the hidden voter to the player who just marked it
         this.askVoter(voter, tv);
     }
 
-    private String convertPlayer(String color) {
+    //convert the color of the player to its department initial
+    public static String convertPlayer(String color) {
         switch (color) {
             case "Red": return "S";
             case "Blue": return "D";
@@ -269,6 +286,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
+    //convert the color of the player to its Java color
     private int colorToInt(String color) {
         switch (color) {
             case "Red": return Color.RED;
@@ -282,6 +300,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
+    //some colors don't show black text well
     private int textColor(String color) {
         switch (color) {
             case "Blue": return Color.parseColor("#FFFFFF");
@@ -310,7 +329,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         ((TextView)findViewById(R.id.one)).setText(this.consortium.get(0));
         this.consortium.add("Most Supporters");
         ((TextView)findViewById(R.id.two)).setText(this.consortium.get(1));
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 10; i++) { //randomly select 10 voters from the voter pool
             int voter = r.nextInt(this.possibleVoters.size());
             this.consortium.add(this.possibleVoters.get(voter));
             this.possibleVoters.remove(voter);
@@ -319,6 +338,7 @@ public class ConsortiumBoard extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+        //don't allow accidental back presses. this can be a 3-hour game! wouldn't want it ruined by accidental back presses
         if (this.toast.getView().isShown()) {
             super.onBackPressed();
         }
@@ -327,7 +347,7 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
-    private void buildVoterPool(boolean mancersUsed) {
+    private void buildVoterPool(boolean mancersUsed, boolean hasArchmage) {
         this.possibleVoters.add("2nd-Most Influence");
         this.possibleVoters.add("2nd-Most Supporters");
         this.possibleVoters.add("Most Marks");
@@ -347,6 +367,8 @@ public class ConsortiumBoard extends ActionBarActivity {
         this.possibleVoters.add("Largest Collection (most spell, vault, and supporter cards)");
         if (mancersUsed) {
             this.possibleVoters.add("Most Technomancy");
+        }
+        if (hasArchmage) {
             this.possibleVoters.add("Owner of the Archmage's Staff");
         }
     }
