@@ -527,26 +527,35 @@ public class DisplayGameActivity extends ActionBarActivity {
 
     public void connectingHelper(Tile t) {
         String match = t.name.replace(" - A", " - B");
+        boolean hasMatch = false;
         for (Tile tile : this.possibleTiles) {
             if(tile.name.equals(match)) {
                 t.setBSide(tile);
+                hasMatch = true;
                 break;
             }
+        }
+        if(!hasMatch) {
+            t.aSide = t;
         }
     }
 
     public void connectTiles(String mix) { //match up a and b sides so we don't get, eg, Chapel-a and Chapel-b
         if (mix.equals("Mix")) { //joining tiles is only necessary if you're using both sides
-            for (int i = 0; i < this.possibleTiles.size(); i++) {
-                if(this.possibleTiles.get(i).name.contains(" - B")) {
-                    break;
+            for (Tile t : this.possibleTiles) {
+                if(t.name.contains(" - B")) {
+                    if(t.aSide == null)
+                    {
+                        t.aSide = t;
+                    }
+                    continue;
                 }
-                connectingHelper(this.possibleTiles.get(i));
+                connectingHelper(t);
             }
         }
         else { //so if you're not using both sides, just reference itself for code reasons
-            for (int i=0; i < this.possibleTiles.size(); i++) {
-                this.possibleTiles.get(i).aSide = this.possibleTiles.get(i);
+            for (Tile t : this.possibleTiles) {
+                t.aSide = t;
             }
         }
 
