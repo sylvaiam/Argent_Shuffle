@@ -1,5 +1,6 @@
 package antoku.argenttheconsortiumshuffle;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.content.Intent;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+import android.preference.PreferenceManager;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -26,10 +28,30 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         //set the default selections
         ((Spinner)findViewById(R.id.spinner_players)).setSelection(1);
         ((Spinner)findViewById(R.id.spinner_sides)).setSelection(2);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        CheckBox mancers = (CheckBox) findViewById(R.id.checkBox_mancers);
+        CheckBox resources = (CheckBox) findViewById(R.id.checkBox_resources);
+        CheckBox mages = (CheckBox) findViewById(R.id.checkBox_mages);
+        CheckBox scenario = (CheckBox) findViewById(R.id.checkBox_scenario);
+        CheckBox white = (CheckBox) findViewById(R.id.checkbox_white);
+        CheckBox archmage = (CheckBox) findViewById(R.id.checkbox_archmage);
+
+        mancers.setChecked(prefs.getBoolean("inc_mancers", false));
+        resources.setChecked(prefs.getBoolean("inc_resources", false));
+        mages.setChecked(prefs.getBoolean("inc_plus_mage", false));
+        scenario.setChecked(prefs.getBoolean("inc_scenario", false));
+        white.setChecked(prefs.getBoolean("neut_cand", false));
+        archmage.setChecked(prefs.getBoolean("inc_archmage", false));
     }
 
 
@@ -37,7 +59,23 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void startGame(View view) {

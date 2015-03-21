@@ -42,5 +42,7 @@
 
     <string name="title_activity_display_game">DisplayGameActivity</string>
     <string name="title_activity_consortium_board">ConsortiumBoard</string>
+    <string name="title_activity_settings">Settings</string>
+
 
 </resources>

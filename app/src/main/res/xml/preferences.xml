@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="neut_cand"
+        android:title="@string/include_white"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="inc_mancers"
+        android:title="@string/include_mancers"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="inc_archmage"
+        android:title="@string/include_archmage"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="inc_resources"
+        android:title="@string/include_resources"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="inc_plus_mage"
+        android:title="@string/include_plus_mage"
+        android:defaultValue="false" />
+    <CheckBoxPreference
+        android:key="inc_scenario"
+        android:title="@string/include_scenario"
+        android:defaultValue="false" />
+
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="category_a_key"
+        android:title="A Tiles">
+        <CheckBoxPreference
+            android:key="pref_adventuring_a"
+            android:title="Adventuring - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_archmage_study_a"
+            android:title="Archmage's Study - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_astronomy_tower_a"
+            android:title="Astronomy Tower - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_catacombs_a"
+            android:title="Catacombs - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_chapel_a"
+            android:title="Chapel - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_courtyard_a"
+            android:title="Courtyard - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_dormitory_a"
+            android:title="Dormitory - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_great_hall_a"
+            android:title="Great Hall - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_guild_a"
+            android:title="Guilds - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_stud_store_a"
+            android:title="Student Stores - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_train_field_a"
+            android:title="Training Fields - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_vault_a"
+            android:title="Vault - A"
+            android:defaultValue="true" />
+
+        <PreferenceCategory
+            android:title="Mancer's Expansion" />
+        <CheckBoxPreference
+            android:key="pref_research_arch_a"
+            android:title="Research Archive - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_atelier_a"
+            android:title="Atelier - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_golem_lab_a"
+            android:title="Golem Lab - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_lab_a"
+            android:title="Laboratory - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_univ_tavern_a"
+            android:title="University Tavern - A"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_synth_work_a"
+            android:title="Synthesis Workshop - A"
+            android:defaultValue="true" />
+    </PreferenceScreen>
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="category_b_key"
+        android:title="B Tiles">
+        <CheckBoxPreference
+            android:key="pref_adventuring_b"
+            android:title="Adventuring - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_archmage_study_b"
+            android:title="Archmage's Study - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_astronomy_tower_b"
+            android:title="Astronomy Tower - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_catacombs_b"
+            android:title="Catacombs - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_chapel_b"
+            android:title="Chapel - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_courtyard_b"
+            android:title="Courtyard - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_dormitory_b"
+            android:title="Dormitory - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_great_hall_b"
+            android:title="Great Hall - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_guild_b"
+            android:title="Guilds - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_stud_store_b"
+            android:title="Student Stores - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_train_field_b"
+            android:title="Training Fields - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_vault_b"
+            android:title="Vault - B"
+            android:defaultValue="true" />
+
+
+        <PreferenceCategory
+            android:title="Mancer's Expansion" />
+        <CheckBoxPreference
+            android:key="pref_research_arch_b"
+            android:title="Research Archive - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_atelier_b"
+            android:title="Atelier - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_golem_lab_b"
+            android:title="Golem Lab - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_lab_b"
+            android:title="Laboratory - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_univ_tavern_b"
+            android:title="University Tavern - B"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="pref_synth_work_b"
+            android:title="Synthesis Workshop - B"
+            android:defaultValue="true" />
+    </PreferenceScreen>
+</PreferenceScreen>

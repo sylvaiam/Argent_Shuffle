@@ -3,6 +3,8 @@ package antoku.argenttheconsortiumshuffle;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -79,29 +81,7 @@ public class DisplayGameActivity extends ActionBarActivity {
         setContentView(R.layout.activity_display_game);
         LinearLayout display_game = (LinearLayout)findViewById(R.id.display_game);
 
-        //populate possible tiles, depnding on if you're using A/B sides or both
-        if(sidesUsed.equals("Mix") || sidesUsed.equals("All A")) {
-            this.buildASides(mancersUsed);
-        }
-
-        if(sidesUsed.equals("Mix") || sidesUsed.equals("All B")) {
-            this.buildBSides(mancersUsed);
-        }
-        //connect a-sides to their b-sides
-        this.connectTiles(sidesUsed);
-        if(numPlayers == 2) { //two-player games don't use Great Hall A or Dormitory tiles
-            for(int i = this.possibleTiles.size() - 1; i >= 0; i--) {
-                Tile t = this.possibleTiles.get(i);
-                if (t.name.equals("Great Hall - A")) {
-                    this.possibleTiles.remove(t);
-                    this.influenceTiles.remove(t);
-                }
-                else if(t.name.contains("Dormitory")) {
-                    this.possibleTiles.remove(t.aSide);
-                    this.possibleTiles.remove(t.bSide);
-                }
-            }
-        }
+        this.addTiles(sidesUsed, mancersUsed, numPlayers, false);
 
         //select the tiles to be used this game
         ArrayList<Tile> university = this.buildUniversity(numPlayers, sidesUsed);
@@ -327,6 +307,9 @@ public class DisplayGameActivity extends ActionBarActivity {
         if (numPlayers == 2) { //don't require a +mage tile for 2 players
             this.needsMages = false;
         }
+        if(this.goldTiles.size() == 0) {
+            this.needsGold = false;
+        }
         if(this.needsGold) { //add a gold tile
             Tile tile = this.goldTiles.get(r.nextInt(this.goldTiles.size()));
             university.add(tile);
@@ -342,6 +325,9 @@ public class DisplayGameActivity extends ActionBarActivity {
             if (tile.addsMages) { this.needsMages = false; }
             else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
         }
+        if(this.manaTiles.size() == 0) {
+            this.needsMana = false;
+        }
         if(this.needsMana) { //same as gold, but with mana
             Tile tile = this.manaTiles.get(r.nextInt(this.manaTiles.size()));
             university.add(tile);
@@ -353,6 +339,9 @@ public class DisplayGameActivity extends ActionBarActivity {
             if (tile.addsMages) { this.needsMages = false; }
             else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
         }
+        if(this.influenceTiles.size() == 0) {
+            this.needsIP = false;
+        }
         if(this.needsIP) { //same as gold, but with influence
             Tile tile = this.influenceTiles.get(r.nextInt(this.influenceTiles.size()));
             university.add(tile);
@@ -361,6 +350,9 @@ public class DisplayGameActivity extends ActionBarActivity {
             this.possibleTiles.remove(tile.bSide);
             if (tile.addsMages) { this.needsMages = false; }
             else {this.mageTiles.remove(tile.aSide); this.mageTiles.remove(tile.bSide); }
+        }
+        if(this.mageTiles.size() == 0) {
+            this.needsMages = false;
         }
         if(this.needsMages) { //same as gold, but with mages
             Tile tile = this.mageTiles.get(r.nextInt(this.mageTiles.size()));
@@ -379,57 +371,177 @@ public class DisplayGameActivity extends ActionBarActivity {
         return university;
     }
 
-    public void buildASides(boolean hasMancers) { //all the a-side tiles
-        this.possibleTiles.add(new Tile("Adventuring - A", false, true, true, false));
-        this.possibleTiles.add(new Tile("Archmage's Study - A", false, false, true, false));
-        this.possibleTiles.add(new Tile("Astronomy Tower - A", true, true, false, false));
-        this.possibleTiles.add(new Tile("Catacombs - A", false, false, true, false));
-        this.possibleTiles.add(new Tile("Chapel - A", true, true, true, false));
-        this.possibleTiles.add(new Tile("Courtyard - A", true, false, false, false));
-        this.possibleTiles.add(new Tile("Dormitory - A", false, false, false, true));
-        this.possibleTiles.add(new Tile("Great Hall - A", false, false, true, false));
-        this.possibleTiles.add(new Tile("Guilds - A", true, true, false, false));
-        this.possibleTiles.add(new Tile("Student Stores - A", false, false, false, false));
-        this.possibleTiles.add(new Tile("Training Fields - A", false, false, false, false));
-        this.possibleTiles.add(new Tile("Vault - A", false, false, false ,false));
-        if (hasMancers) { //mancer's tiles
-            this.possibleTiles.add(new Tile("Research Archive - A", false, false, false, false));
-            this.possibleTiles.add(new Tile("Atelier - A", true, true, false, false));
-            this.possibleTiles.add(new Tile("Golem Lab - A", false, false, false, false));
-            this.possibleTiles.add(new Tile("Laboratory - A", true, true, false, false));
-            this.possibleTiles.add(new Tile("University Tavern - A", false, false, false, false));
-            this.possibleTiles.add(new Tile("Synthesis Workshop - A", false, false, false, false));
+    public void addTiles(String sidesUsed, boolean mancersUsed, int numPlayers, boolean ignorePrefs) {
+        //populate possible tiles, depending on if you're using A/B sides or both
+        if(sidesUsed.equals("Mix") || sidesUsed.equals("All A")) {
+            this.buildASides(mancersUsed, ignorePrefs);
+        }
+
+        if(sidesUsed.equals("Mix") || sidesUsed.equals("All B")) {
+            this.buildBSides(mancersUsed, ignorePrefs);
+        }
+
+        //connect a-sides to their b-sides
+        this.connectTiles(sidesUsed);
+        if(numPlayers == 2) { //two-player games don't use Great Hall A or Dormitory tiles
+            for(int i = this.possibleTiles.size() - 1; i >= 0; i--) {
+                Tile t = this.possibleTiles.get(i);
+                if (t.name.equals("Great Hall - A")) {
+                    this.possibleTiles.remove(t);
+                    this.influenceTiles.remove(t);
+                }
+                else if(t.name.contains("Dormitory")) {
+                    this.possibleTiles.remove(t.aSide);
+                    this.possibleTiles.remove(t.bSide);
+                }
+            }
+        }
+
+        if(this.possibleTiles.size() < this.tilesPerPlayer[numPlayers]) {
+            this.possibleTiles.clear();
+            this.addTiles(sidesUsed, mancersUsed, numPlayers, true);
         }
     }
 
-    public void buildBSides(boolean hasMancers) { //all the b-side tiles
-        this.possibleTiles.add(new Tile("Adventuring - B", false, false, false ,false));
-        this.possibleTiles.add(new Tile("Archmage's Study - B", true, false, false, false));
-        this.possibleTiles.add(new Tile("Astronomy Tower - B", true, true, false, true));
-        this.possibleTiles.add(new Tile("Catacombs - B", false, true, true, false));
-        this.possibleTiles.add(new Tile("Chapel - B", false, false, true, false));
-        this.possibleTiles.add(new Tile("Courtyard - B", true, false, false, false));
-        this.possibleTiles.add(new Tile("Dormitory - B", false, false, false, true));
-        this.possibleTiles.add(new Tile("Great Hall - B", true, true, false, false));
-        this.possibleTiles.add(new Tile("Guilds - B", true, true, false, false));
-        this.possibleTiles.add(new Tile("Student Stores - B", false, false, false, false));
-        this.possibleTiles.add(new Tile("Training Fields - B", true, false, false, false));
-        this.possibleTiles.add(new Tile("Vault - B", false, true, false, false));
+    public void buildASides(boolean hasMancers, boolean ignorePrefs) { //all the a-side tiles
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if(ignorePrefs || prefs.getBoolean("pref_adventuring_a", true)) {
+            this.possibleTiles.add(new Tile("Adventuring - A", false, true, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_archmage_study_a", true)) {
+            this.possibleTiles.add(new Tile("Archmage's Study - A", false, false, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_astronomy_tower_a", true)) {
+            this.possibleTiles.add(new Tile("Astronomy Tower - A", true, true, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_catacombs_a", true)) {
+            this.possibleTiles.add(new Tile("Catacombs - A", false, false, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_chapel_a", true)) {
+            this.possibleTiles.add(new Tile("Chapel - A", true, true, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_courtyard_a", true)) {
+            this.possibleTiles.add(new Tile("Courtyard - A", true, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_dormitory_a", true)) {
+            this.possibleTiles.add(new Tile("Dormitory - A", false, false, false, true));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_great_hall_a", true)) {
+            this.possibleTiles.add(new Tile("Great Hall - A", false, false, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_guild_a", true)) {
+            this.possibleTiles.add(new Tile("Guilds - A", true, true, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_stud_store_a", true)) {
+            this.possibleTiles.add(new Tile("Student Stores - A", false, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_train_field_a", true)) {
+            this.possibleTiles.add(new Tile("Training Fields - A", false, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_vault_a", true)) {
+            this.possibleTiles.add(new Tile("Vault - A", false, false, false, false));
+        }
         if (hasMancers) { //mancer's tiles
-            this.possibleTiles.add(new Tile("Research Archive - B", false, false, false, false));
-            this.possibleTiles.add(new Tile("Atelier - B", true, true, true, false));
-            this.possibleTiles.add(new Tile("Golem Lab - B", false, false, false, false));
-            this.possibleTiles.add(new Tile("Laboratory - B", true, false, false, false));
-            this.possibleTiles.add(new Tile("University Tavern - B", false, false, false, false));
-            this.possibleTiles.add(new Tile("Synthesis Workshop - B", false, false, false, false));
+            if(ignorePrefs || prefs.getBoolean("pref_research_arch_a", true)) {
+                this.possibleTiles.add(new Tile("Research Archive - A", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_atelier_a", true)) {
+                this.possibleTiles.add(new Tile("Atelier - A", true, true, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_golem_lab_a", true)) {
+                this.possibleTiles.add(new Tile("Golem Lab - A", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_lab_a", true)) {
+                this.possibleTiles.add(new Tile("Laboratory - A", true, true, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_univ_tavern_a", true)) {
+                this.possibleTiles.add(new Tile("University Tavern - A", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_synth_work_a", true)) {
+                this.possibleTiles.add(new Tile("Synthesis Workshop - A", false, false, false, false));
+            }
+        }
+    }
+
+    public void buildBSides(boolean hasMancers, boolean ignorePrefs) { //all the b-side tiles
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if(ignorePrefs || prefs.getBoolean("pref_adventuring_b", true)) {
+            this.possibleTiles.add(new Tile("Adventuring - B", false, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_archmage_study_b", true)) {
+            this.possibleTiles.add(new Tile("Archmage's Study - B", true, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_astronomy_tower_b", true)) {
+            this.possibleTiles.add(new Tile("Astronomy Tower - B", true, true, false, true));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_catacombs_b", true)) {
+            this.possibleTiles.add(new Tile("Catacombs - B", false, true, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_chapel_b", true)) {
+            this.possibleTiles.add(new Tile("Chapel - B", false, false, true, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_courtyard_b", true)) {
+            this.possibleTiles.add(new Tile("Courtyard - B", true, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_dormitory_b", true)) {
+            this.possibleTiles.add(new Tile("Dormitory - B", false, false, false, true));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_great_hall_b", true)) {
+            this.possibleTiles.add(new Tile("Great Hall - B", true, true, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_guild_b", true)) {
+            this.possibleTiles.add(new Tile("Guilds - B", true, true, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_stud_store_b", true)) {
+            this.possibleTiles.add(new Tile("Student Stores - B", false, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_train_field_b", true)) {
+            this.possibleTiles.add(new Tile("Training Fields - B", true, false, false, false));
+        }
+        if(ignorePrefs || prefs.getBoolean("pref_vault_b", true)) {
+            this.possibleTiles.add(new Tile("Vault - B", false, true, false, false));
+        }
+        if (hasMancers) { //mancer's tiles
+            if(ignorePrefs || prefs.getBoolean("pref_research_arch_b", true)) {
+                this.possibleTiles.add(new Tile("Research Archive - B", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_atelier_b", true)) {
+                this.possibleTiles.add(new Tile("Atelier - B", true, true, true, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_golem_lab_b", true)) {
+                this.possibleTiles.add(new Tile("Golem Lab - B", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_lab_b", true)) {
+                this.possibleTiles.add(new Tile("Laboratory - B", true, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_univ_tavern_b", true)) {
+                this.possibleTiles.add(new Tile("University Tavern - B", false, false, false, false));
+            }
+            if(ignorePrefs || prefs.getBoolean("pref_synth_work_b", true)) {
+                this.possibleTiles.add(new Tile("Synthesis Workshop - B", false, false, false, false));
+            }
+        }
+    }
+
+    public void connectingHelper(Tile t) {
+        String match = t.name.replace(" - A", " - B");
+        for (Tile tile : this.possibleTiles) {
+            if(tile.name.equals(match)) {
+                t.setBSide(tile);
+                break;
+            }
         }
     }
 
     public void connectTiles(String mix) { //match up a and b sides so we don't get, eg, Chapel-a and Chapel-b
         if (mix.equals("Mix")) { //joining tiles is only necessary if you're using both sides
-            int numTiles = this.possibleTiles.size() / 2;
-            for (int i = 0; i < numTiles; i++) {
-                this.possibleTiles.get(i).setBSide(this.possibleTiles.get(i + numTiles));
+            for (int i = 0; i < this.possibleTiles.size(); i++) {
+                if(this.possibleTiles.get(i).name.contains(" - B")) {
+                    break;
+                }
+                connectingHelper(this.possibleTiles.get(i));
             }
         }
         else { //so if you're not using both sides, just reference itself for code reasons
