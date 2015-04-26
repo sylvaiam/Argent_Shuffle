@@ -189,5 +189,10 @@
             android:onClick="voter_ten"
             android:clickable="true"
             android:id="@+id/twelve" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reveal_voters"
+            android:onClick="revealVoters" />
     </LinearLayout>
 </ScrollView>

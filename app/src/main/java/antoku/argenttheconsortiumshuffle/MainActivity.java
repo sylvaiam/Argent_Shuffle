@@ -1,5 +1,6 @@
 package antoku.argenttheconsortiumshuffle;
 
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -68,6 +69,9 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_settings:
                 openSettings();
                 return true;
+            case R.id.action_help:
+                openHelp();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -76,6 +80,14 @@ public class MainActivity extends ActionBarActivity {
     public void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void openHelp() {
+        //for now, just going to do a popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Choose how many players are playing, which sides you want to use (Mix for both), " +
+                "and other settings.")
+                .setPositiveButton("Okay", null).show();
     }
 
     public void startGame(View view) {

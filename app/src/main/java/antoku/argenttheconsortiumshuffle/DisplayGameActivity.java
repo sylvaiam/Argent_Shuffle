@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -222,6 +223,33 @@ public class DisplayGameActivity extends ActionBarActivity {
             university.remove(tile);
             display_game.addView(tv);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                openHelp();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void openHelp() {
+        //for now, just going to do a popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Shows: what side Mage Powers to use, what department/side each player is in " +
+                "(as well as who goes first), and what tiles/sides fill the university. Can change what " +
+                "department a player is in with the spinners.")
+                .setPositiveButton("Okay", null).show();
     }
 
     private String colorToDepartment(String color) {
@@ -574,20 +602,5 @@ public class DisplayGameActivity extends ActionBarActivity {
                 this.mageTiles.add(t);
             }
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

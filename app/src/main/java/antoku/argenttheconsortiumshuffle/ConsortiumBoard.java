@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -79,6 +80,36 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
 
         buildConsortium();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                openHelp();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void openHelp() {
+        //for now, just going to do a popup
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Keeps track of the voters and influence. To select which player to affect, " +
+                "click on their button at the top. This changes the color of the influence buttons. " +
+                "The (1st), (2nd), etc. next to a player's influence denotes what place they are in. " +
+                "You can increase/decrease influence of the selected player by clicking the appropriate button." +
+                "You can mark/look at a voter by clicking on the voter. All players who have marked a voter appear next to it. " +
+                "You can quick-reveal all voters and end the game by clicking Reveal Voters.")
+                .setPositiveButton("Okay", null).show();
     }
 
     public void setButtonText(Button curBut, int player, int firstPlayer) {
@@ -308,21 +339,6 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void buildConsortium() {
         Random r = new Random();
         this.consortium.add("Most Influence");
@@ -348,8 +364,10 @@ public class ConsortiumBoard extends ActionBarActivity {
     }
 
     private void buildVoterPool(boolean mancersUsed, boolean hasArchmage) {
-        this.possibleVoters.add("2nd-Most Influence");
-        this.possibleVoters.add("2nd-Most Supporters");
+        if(this.players.length > 2) { //remove these in 2-player games
+            this.possibleVoters.add("2nd-Most Influence");
+            this.possibleVoters.add("2nd-Most Supporters");
+        }
         this.possibleVoters.add("Most Marks");
         this.possibleVoters.add("Most Divinity");
         this.possibleVoters.add("Most Planar Studies");
@@ -373,6 +391,35 @@ public class ConsortiumBoard extends ActionBarActivity {
         }
     }
 
+    public void revealVoters(View view) {
+        RevealClickListener t = new RevealClickListener(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to reveal all voters?").setNegativeButton("No", t)
+                .setPositiveButton("Yes", t).show();
+        builder = new AlertDialog.Builder(this);
+        builder.setMessage("WARNING: THIS WILL END THE GAME").setPositiveButton("Okay", null).show();
+    }
+
+    public void revealHelper() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        for (int i = 0; i < this.consortium.size(); i++) {
+            for (Player player : this.players) {
+                player.marks[i] = true;
+            }
+            builder.setMessage(this.consortium.get(i)).setPositiveButton("Okay", null).show();
+        }
+        ((TextView) findViewById(R.id.three)).setText(this.consortium.get(2));
+        ((TextView) findViewById(R.id.four)).setText(this.consortium.get(3));
+        ((TextView) findViewById(R.id.five)).setText(this.consortium.get(4));
+        ((TextView) findViewById(R.id.six)).setText(this.consortium.get(5));
+        ((TextView) findViewById(R.id.seven)).setText(this.consortium.get(6));
+        ((TextView) findViewById(R.id.eight)).setText(this.consortium.get(7));
+        ((TextView) findViewById(R.id.nine)).setText(this.consortium.get(8));
+        ((TextView) findViewById(R.id.ten)).setText(this.consortium.get(9));
+        ((TextView) findViewById(R.id.eleven)).setText(this.consortium.get(10));
+        ((TextView) findViewById(R.id.twelve)).setText(this.consortium.get(11));
+    }
+
     private class MyClickListener implements DialogInterface.OnClickListener {
         ConsortiumBoard consortiumBoard;
         int voter;
@@ -387,6 +434,22 @@ public class ConsortiumBoard extends ActionBarActivity {
             switch(which) {
                 case DialogInterface.BUTTON_POSITIVE:
                     this.consortiumBoard.markVoter(this.voter, this.tv);
+                    break;
+            }
+        }
+    }
+
+    private class RevealClickListener implements DialogInterface.OnClickListener {
+        ConsortiumBoard consortiumBoard;
+        public RevealClickListener(ConsortiumBoard cb) {
+            this.consortiumBoard = cb;
+        }
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch(which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    this.consortiumBoard.revealHelper();
                     break;
             }
         }
